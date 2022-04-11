@@ -1,0 +1,138 @@
+[
+    {
+        "id": "0ee6527d8f08b553",
+        "type": "tab",
+        "label": "Flow 1",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "6d16d6f65918d171",
+        "type": "mqtt in",
+        "z": "0ee6527d8f08b553",
+        "name": "",
+        "topic": "application/216/device/+/rx",
+        "qos": "2",
+        "datatype": "auto",
+        "broker": "ef65745cda40ef16",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 290,
+        "y": 220,
+        "wires": [
+            [
+                "b92f1672be80fc90"
+            ]
+        ]
+    },
+    {
+        "id": "068c06bde0e91111",
+        "type": "influxdb batch",
+        "z": "0ee6527d8f08b553",
+        "influxdb": "449ba301e39caf41",
+        "precision": "",
+        "retentionPolicy": "",
+        "name": "influxdb batch node",
+        "database": "db0",
+        "precisionV18FluxV20": "ms",
+        "retentionPolicyV18Flux": "",
+        "org": "admin",
+        "bucket": "admin",
+        "x": 890,
+        "y": 220,
+        "wires": []
+    },
+    {
+        "id": "b92f1672be80fc90",
+        "type": "json",
+        "z": "0ee6527d8f08b553",
+        "name": "",
+        "property": "payload",
+        "action": "",
+        "pretty": false,
+        "x": 490,
+        "y": 220,
+        "wires": [
+            [
+                "a7852b7c3cc35882"
+            ]
+        ]
+    },
+    {
+        "id": "a7852b7c3cc35882",
+        "type": "function",
+        "z": "0ee6527d8f08b553",
+        "name": "payload transform",
+        "func": "let payload = [];\nfor (const key in msg.payload.object) {\n    payload.push({\n        measurement: key,\n        fields: {\n            value: msg.payload.object[key]\n        }\n    });\n}\nnode.warn(msg)\nmsg.payload = payload\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 670,
+        "y": 220,
+        "wires": [
+            [
+                "068c06bde0e91111"
+            ]
+        ]
+    },
+    {
+        "id": "ef65745cda40ef16",
+        "type": "mqtt-broker",
+        "name": "mqtt-config",
+        "broker": "lns.campusiot.imag.fr",
+        "port": "8883",
+        "tls": "c70100c9c40b851e",
+        "clientid": "",
+        "autoConnect": true,
+        "usetls": true,
+        "protocolVersion": "4",
+        "keepalive": "60",
+        "cleansession": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthPayload": "",
+        "birthMsg": {},
+        "closeTopic": "",
+        "closeQos": "0",
+        "closePayload": "",
+        "closeMsg": {},
+        "willTopic": "",
+        "willQos": "0",
+        "willPayload": "",
+        "willMsg": {},
+        "sessionExpiry": ""
+    },
+    {
+        "id": "449ba301e39caf41",
+        "type": "influxdb",
+        "hostname": "127.0.0.1",
+        "port": "8086",
+        "protocol": "http",
+        "database": "database",
+        "name": "Influxdb config",
+        "usetls": false,
+        "tls": "c70100c9c40b851e",
+        "influxdbVersion": "1.8-flux",
+        "url": "http://influxdb:8086",
+        "rejectUnauthorized": true
+    },
+    {
+        "id": "c70100c9c40b851e",
+        "type": "tls-config",
+        "name": "",
+        "cert": "",
+        "key": "",
+        "ca": "",
+        "certname": "",
+        "keyname": "",
+        "caname": "",
+        "servername": "",
+        "verifyservercert": true,
+        "alpnprotocol": ""
+    }
+]
